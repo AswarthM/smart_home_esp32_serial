@@ -1,3 +1,4 @@
+#include <WiFiManager.h> // https://github.com/tzapu/WiFiManager
 #include <common.h>
 #include <Firebase.h>
 #include <FirebaseESP32.h>
@@ -8,10 +9,10 @@
 //#include <ESP8266WiFi.h>
 
 
-#define FIREBASE_HOST "wifitrackernodemcu-default-rtdb.asia-southeast1.firebasedatabase.app/" //Without http:// or https:// schemes
+#define FIREBASE_HOST "wifitrackernodemcu-default-rtdb.asia-southeast1.firebasedatabase.app/" //Without http:// or https://
 #define FIREBASE_AUTH "DNSWFUivtm839z6CqUNsgy6VvfMvmYvrc0Ty6ShZ"
-#define WIFI_SSID "HATH420"
-#define WIFI_PASSWORD "hath@420"
+//#define WIFI_SSID "HATH420"
+//#define WIFI_PASSWORD "hath@420"
 
 FirebaseData firebaseData;
 FirebaseData swStates;
@@ -50,17 +51,32 @@ int ind10;
 
 void setup() {
   Serial.begin(9600);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.print("Connecting to Wi-Fi");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.print(".");
-    delay(300);
+
+
+  WiFi.mode(WIFI_STA);
+  WiFiManager wm;
+  bool res;
+  res = wm.autoConnect("AutoConnectAP", "password"); // password protected ap
+  if (!res) {
+    Serial.println("Failed to connect");
+    // ESP.restart();
   }
-  Serial.println();
-  Serial.print("Connected with IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.println();
+  else {
+    //if you get here you have connected to the WiFi
+    Serial.println("connected...yeey :)");
+  }
+
+  //  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  //  Serial.print("Connecting to Wi-Fi");
+  //  while (WiFi.status() != WL_CONNECTED)
+  //  {
+  //    Serial.print(".");
+  //    delay(300);
+  //  }
+  //  Serial.println();
+  //  Serial.print("Connected with IP: ");
+  //  Serial.println(WiFi.localIP());
+  //  Serial.println();
 
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
