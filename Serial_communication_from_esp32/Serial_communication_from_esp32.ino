@@ -49,6 +49,8 @@ int ind8;
 int ind9;
 int ind10;
 
+int tempPin = 34;
+
 void setup() {
   Serial.begin(9600);
 
@@ -155,7 +157,10 @@ void loop() {
     serialMsg += swStates.stringData();
     Serial.println(serialMsg);
     serialMsg = "";
+    readTemp();
+
   }
+  
 
 
 
@@ -201,4 +206,14 @@ void loop() {
   //  }
 
 
+}
+
+void readTemp(){
+  float rawTemp = analogRead(tempPin);
+  float temp = (rawTemp / 2048.0) * 3300 * 0.1;
+  temp = temp * 100; //truncate to 2 decimal places
+  int temp2 = (int)temp;
+  temp = (float)temp2 / 100;
+  Firebase.setInt(firebaseData, "temp", temp);
+  //Serial.println(temp);
 }
